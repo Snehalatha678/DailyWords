@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "578873983829",
+    "project_id": "dailywords-113fa",
+    "storage_bucket": "dailywords-113fa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578873983829:android:a1fb9e5a20e674ce7825dc",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.dailywords"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7lJQDcBZS7vHMhyJ1SK20Bher_g9n6lk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
