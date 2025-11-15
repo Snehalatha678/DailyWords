@@ -4,9 +4,6 @@ package uk.ac.tees.mad.dailywords.ui.domain.util
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.uk.ac.tees.mad.lifehacks.domain.util.EmptyResult
-import com.uk.ac.tees.mad.lifehacks.domain.util.Result
-import com.uk.ac.tees.mad.lifehacks.domain.util.asEmptyResult
 
 import kotlinx.coroutines.CancellationException
 

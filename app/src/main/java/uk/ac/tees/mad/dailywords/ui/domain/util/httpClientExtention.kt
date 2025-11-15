@@ -1,8 +1,6 @@
 package uk.ac.tees.mad.dailywords.ui.domain.util
 
 
-import com.uk.ac.tees.mad.lifehacks.domain.util.Result
-import com.uk.ac.tees.mad.lifehacks.domain.util.UrlConstants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body

@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.domain.util
+package uk.ac.tees.mad.dailywords.ui.domain.util
 
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpRequestTimeoutException
@@ -6,7 +6,6 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
-import uk.ac.tees.mad.dailywords.ui.domain.util.DataError
 
 suspend fun <T> httpResult(block: suspend () -> T): Result<T, DataError.Remote> {
     return try {

@@ -1,6 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.domain.util
-
-import uk.ac.tees.mad.dailywords.ui.domain.util.Error
+package uk.ac.tees.mad.dailywords.ui.domain.util
 
 
 sealed interface Result<out D, out E : Error> {
