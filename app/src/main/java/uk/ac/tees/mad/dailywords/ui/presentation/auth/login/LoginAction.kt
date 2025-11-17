@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.auth.login
+package uk.ac.tees.mad.dailywords.ui.presentation.auth.login
 
 sealed interface LoginAction {
     data class OnEmailChange(val email: String) : LoginAction

@@ -33,8 +33,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import com.uk.ac.tees.mad.lifehacks.domain.util.ObserveAsEvents
-import com.uk.ac.tees.mad.lifehacks.ui.theme.LifeHacksTheme
+import uk.ac.tees.mad.dailywords.ui.domain.util.ObserveAsEvents
+import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
+import uk.ac.tees.mad.dailywords.R
 
 @Composable
 fun ForgotRoot(
@@ -102,7 +103,7 @@ fun ForgotScreen(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0))
             ) {
                 Image(
-                    painter = painterResource(id = com.uk.ac.tees.mad.lifehacks.R.drawable.forgot_password_image), // Placeholder
+                    painter = painterResource(id = R.drawable.forgot_password_image), // Placeholder
                     contentDescription = "Forgot Password Icon",
                     modifier = Modifier.padding(24.dp).size(180.dp)
                 )
@@ -179,7 +180,7 @@ fun ForgotScreen(
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    LifeHacksTheme() {
+    DailyWordsTheme() {
         ForgotScreen(
             state = ForgotState(),
             onAction = {}

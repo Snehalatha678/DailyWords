@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.domain.util
+package uk.ac.tees.mad.dailywords.ui.domain.util
 
 import android.content.Context
 import android.net.ConnectivityManager

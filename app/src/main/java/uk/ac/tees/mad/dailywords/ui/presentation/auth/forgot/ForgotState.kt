@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.auth.forgot
+package uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot
 
 data class ForgotState(
     val email: String = "",

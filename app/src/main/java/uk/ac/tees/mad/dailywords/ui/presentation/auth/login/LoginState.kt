@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.auth.login
+package uk.ac.tees.mad.dailywords.ui.presentation.auth.login
 
 data class LoginState(
     val email: String = "",

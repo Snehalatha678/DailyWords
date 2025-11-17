@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.domain.util
+package uk.ac.tees.mad.dailywords.ui.domain.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
