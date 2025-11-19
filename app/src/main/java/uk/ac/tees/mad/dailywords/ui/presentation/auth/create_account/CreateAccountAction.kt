@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.auth.create_account
+package uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account
 
 sealed interface CreateAccountAction {
     data class OnNameChange(val name: String) : CreateAccountAction
