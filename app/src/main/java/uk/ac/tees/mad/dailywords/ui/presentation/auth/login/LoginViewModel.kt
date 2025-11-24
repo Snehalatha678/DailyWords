@@ -2,7 +2,6 @@ package uk.ac.tees.mad.dailywords.ui.presentation.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.uk.ac.tees.mad.lifehacks.domain.AuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,6 +9,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.dailywords.ui.domain.AuthRepository
+import uk.ac.tees.mad.dailywords.ui.domain.util.onFailure
+import uk.ac.tees.mad.dailywords.ui.domain.util.onSuccess
 
 class LoginViewModel(
     private val authRepository: AuthRepository

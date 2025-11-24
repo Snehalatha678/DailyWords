@@ -102,11 +102,7 @@ fun ForgotScreen(
                 shape = CircleShape,
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0))
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.forgot_password_image), // Placeholder
-                    contentDescription = "Forgot Password Icon",
-                    modifier = Modifier.padding(24.dp).size(180.dp)
-                )
+              
             }
 
             Spacer(modifier = Modifier.height(32.dp))

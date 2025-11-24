@@ -1,12 +1,13 @@
-package com.uk.ac.tees.mad.lifehacks.data
+package uk.ac.tees.mad.dailywords.ui.data
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.uk.ac.tees.mad.lifehacks.domain.AuthRepository
-import com.uk.ac.tees.mad.lifehacks.domain.util.DataError
-import com.uk.ac.tees.mad.lifehacks.domain.util.EmptyResult
-import com.uk.ac.tees.mad.lifehacks.domain.util.firebaseResult
 import kotlinx.coroutines.tasks.await
+import uk.ac.tees.mad.dailywords.ui.domain.AuthRepository
+import uk.ac.tees.mad.dailywords.ui.domain.util.DataError
+import uk.ac.tees.mad.dailywords.ui.domain.util.EmptyResult
+import uk.ac.tees.mad.dailywords.ui.domain.util.firebaseResult
+import kotlin.to
 
 class AuthRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,

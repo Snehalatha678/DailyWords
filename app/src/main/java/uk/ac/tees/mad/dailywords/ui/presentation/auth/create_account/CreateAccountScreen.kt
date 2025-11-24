@@ -86,20 +86,11 @@ fun CreateAccountScreen(
             modifier =Modifier.size(60.dp),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.lifehacks_logo1), // Placeholder
-                contentDescription = "lifehacks Logo",
-                modifier = Modifier.size(60.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.lifehacks_logo), // Placeholder
-                contentDescription = "lifehacks Logo",
-                modifier = Modifier.size(60.dp)
-            )
+       
         }
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "lifehacks",
+            text = "DailyWords",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF5DB09B)
@@ -115,11 +106,7 @@ fun CreateAccountScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Image(
-            painter = painterResource(id = R.drawable.create_account_image), // Placeholder
-            contentDescription = "Create Account Illustration",
-            modifier = Modifier.size(180.dp)
-        )
+
 
         Spacer(modifier = Modifier.height(24.dp))
 

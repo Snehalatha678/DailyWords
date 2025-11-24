@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.navigation
+package com.uk.ac.tees.mad.DailyWords.presentation.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -6,9 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.create_account.CreateAccountRoot
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.forgot.ForgotRoot
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.login.LoginRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginRoot
 
 @Composable
 fun Navigation(navcontroller: NavHostController){

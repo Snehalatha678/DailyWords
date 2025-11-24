@@ -1,15 +1,15 @@
-package com.uk.ac.tees.mad.lifehacks.di
+package uk.ac.tees.mad.dailywords.ui.di
 
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.uk.ac.tees.mad.lifehacks.data.AuthRepositoryImpl
-import com.uk.ac.tees.mad.lifehacks.domain.AuthRepository
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.create_account.CreateAccountViewModel
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.forgot.ForgotViewModel
-import com.uk.ac.tees.mad.lifehacks.presentation.auth.login.LoginViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import uk.ac.tees.mad.dailywords.ui.data.AuthRepositoryImpl
+import uk.ac.tees.mad.dailywords.ui.domain.AuthRepository
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginViewModel
 
 val appModule = module {
 

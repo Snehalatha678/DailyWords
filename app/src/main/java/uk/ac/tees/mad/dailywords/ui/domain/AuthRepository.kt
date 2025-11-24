@@ -1,7 +1,8 @@
-package com.uk.ac.tees.mad.lifehacks.domain
+package uk.ac.tees.mad.dailywords.ui.domain
 
-import com.uk.ac.tees.mad.lifehacks.domain.util.DataError
-import com.uk.ac.tees.mad.lifehacks.domain.util.EmptyResult
+import uk.ac.tees.mad.dailywords.ui.domain.util.DataError
+import uk.ac.tees.mad.dailywords.ui.domain.util.EmptyResult
+
 
 interface AuthRepository {
 

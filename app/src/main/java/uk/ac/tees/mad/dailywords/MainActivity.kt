@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.uk.ac.tees.mad.DailyWords.presentation.navigation.Navigation
 import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,10 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DailyWordsTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    Navigation(
+                        navcontroller = navController
                     )
                 }
             }

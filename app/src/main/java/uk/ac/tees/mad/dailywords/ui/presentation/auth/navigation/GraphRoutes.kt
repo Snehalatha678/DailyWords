@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.presentation.navigation
+package com.uk.ac.tees.mad.DailyWords.presentation.navigation
 
 import kotlinx.serialization.Serializable
 sealed class GraphRoutes {

@@ -1,15 +1,15 @@
-package com.uk.ac.tees.mad.lifehacks
+package uk.ac.tees.mad.dailywords
 
 import android.app.Application
-import com.uk.ac.tees.mad.lifehacks.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import uk.ac.tees.mad.dailywords.ui.di.appModule
 
-class LifeHacksApplication : Application() {
+class DailyWordsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@LifeHacksApplication)
+            androidContext(this@DailyWordsApplication)
             modules(appModule)
         }
     }

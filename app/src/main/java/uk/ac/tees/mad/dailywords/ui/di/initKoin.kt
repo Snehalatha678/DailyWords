@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.lifehacks.di
+package uk.ac.tees.mad.dailywords.ui.di
 
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration

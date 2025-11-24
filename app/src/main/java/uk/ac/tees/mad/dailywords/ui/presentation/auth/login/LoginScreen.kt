@@ -113,12 +113,7 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        Image(
-            // Replace with your actual drawable resource
-            painter = painterResource(id = R.drawable.login_image),
-            contentDescription = "Login Illustration",
-            modifier = Modifier.size(200.dp)
-        )
+ 
 
         Spacer(modifier = Modifier.height(24.dp))
 
