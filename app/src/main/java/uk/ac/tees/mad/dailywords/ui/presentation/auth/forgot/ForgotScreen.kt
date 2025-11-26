@@ -102,7 +102,7 @@ fun ForgotScreen(
                 shape = CircleShape,
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0))
             ) {
-              
+
             }
 
             Spacer(modifier = Modifier.height(32.dp))

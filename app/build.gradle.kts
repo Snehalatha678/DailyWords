@@ -80,6 +80,9 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    // Gson
+    implementation("com.google.code.gson:gson:2.9.0")
+
     // Ktor
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)

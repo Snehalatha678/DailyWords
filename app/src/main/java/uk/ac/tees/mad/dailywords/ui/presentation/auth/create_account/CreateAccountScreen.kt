@@ -86,7 +86,7 @@ fun CreateAccountScreen(
             modifier =Modifier.size(60.dp),
             contentAlignment = Alignment.Center
         ) {
-       
+
         }
         Spacer(modifier = Modifier.height(5.dp))
         Text(
