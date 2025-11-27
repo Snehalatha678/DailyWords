@@ -1,7 +1,7 @@
 package uk.ac.tees.mad.dailywords.ui.di
 
-import android.app.Application
-import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -12,18 +12,25 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidApplication
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import uk.ac.tees.mad.dailywords.ui.data.AuthRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.util.GsonParser
 import uk.ac.tees.mad.dailywords.ui.data.word.EtymologyRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.word.WordRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.word.local.Converters
 import uk.ac.tees.mad.dailywords.ui.data.word.local.WordDatabase
 import uk.ac.tees.mad.dailywords.ui.data.word.remote.WordApi
+import uk.ac.tees.mad.dailywords.ui.domain.AuthRepository
 import uk.ac.tees.mad.dailywords.ui.domain.util.JsonParser
 import uk.ac.tees.mad.dailywords.ui.domain.word.EtymologyRepository
 import uk.ac.tees.mad.dailywords.ui.domain.word.WordRepository
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.GetEtymology
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.GetRandomWord
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeViewModel
 
 val appModule = module {
     single {
@@ -56,8 +63,20 @@ val appModule = module {
         EtymologyRepositoryImpl(androidApplication())
     }
 
+    single<AuthRepository> {
+        AuthRepositoryImpl(get(), get())
+    }
+
+    single {
+        FirebaseAuth.getInstance()
+    }
+
+    single {
+        FirebaseFirestore.getInstance()
+    }
+
     single<WordDatabase> {
-        Room.databaseBuilder(
+        androidx.room.Room.databaseBuilder(
             androidApplication(),
             WordDatabase::class.java,
             WordDatabase.DATABASE_NAME
@@ -79,5 +98,21 @@ val appModule = module {
 
     single {
         GetEtymology(get())
+    }
+
+    viewModel {
+        HomeViewModel(get(), get())
+    }
+
+    viewModel {
+        LoginViewModel(get())
+    }
+
+    viewModel {
+        CreateAccountViewModel(get())
+    }
+
+    viewModel {
+        ForgotViewModel(get())
     }
 }

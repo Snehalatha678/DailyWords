@@ -84,7 +84,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
 
     // Ktor
-    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
@@ -109,5 +109,6 @@ dependencies {
     //navigation
 
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.compose.material:material:1.9.4")
 
 }

@@ -1,6 +1,5 @@
-package com.uk.ac.tees.mad.DailyWords.presentation.navigation
+package uk.ac.tees.mad.dailywords.ui.presentation.auth.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,10 +8,11 @@ import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeRoot
 
 @Composable
 fun Navigation(navcontroller: NavHostController){
-    val startDestination = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.Home else GraphRoutes.Login
+    val startDestination: Any = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.Home else GraphRoutes.Login
 
     NavHost(navController = navcontroller, startDestination = startDestination){
 
@@ -61,9 +61,7 @@ fun Navigation(navcontroller: NavHostController){
             )
         }
 
-
-
-        composable<GraphRoutes.Home> { Text(text = "Home Screen") }
+        composable<GraphRoutes.Home> { HomeRoot() }
 
 
     }

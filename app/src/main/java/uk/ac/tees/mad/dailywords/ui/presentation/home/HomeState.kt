@@ -9,5 +9,6 @@ data class HomeState(
     val etymology: String? = null,
     val isBookmarked: Boolean = false,
     val isLoading: Boolean = false,
-    val showEtymology: Boolean = false
+    val showEtymology: Boolean = false,
+    val error: String? = null
 )

@@ -35,38 +35,32 @@ class HomeViewModel(
     }
 
     private fun loadInitialData() {
-        viewModelScope.launch {
-            getRandomWord().onEach { result ->
-                when (result) {
-                    is HttpResult.Loading -> {
-                        _state.update { it.copy(isLoading = true, error = null) }
-                    }
+        getRandomWord().onEach { result ->
+            when (result) {
+                is HttpResult.Loading -> {
+                    _state.update { it.copy(isLoading = true, error = null) }
+                }
 
-                    is HttpResult.Success -> {
-                        val word = result.data
-                        if (word != null) {
-                            _state.update {
-                                it.copy(
-                                    isLoading = false,
-                                    word = word.word,
-                                    phonetic = word.phonetic,
-                                    partOfSpeech = word.meanings.firstOrNull()?.partOfSpeech ?: "",
-                                    definitions = word.meanings.flatMap { it.definitions }.map { it.definition },
-                                    examples = word.meanings.flatMap { it.definitions }.mapNotNull { it.example },
-                                    etymology = ""
-                                )
-                            }
-                        } else {
-                            _state.update { it.copy(isLoading = false, error = "Word not found") }
-                        }
-                    }
-
-                    is HttpResult.Failure -> {
-                        _state.update { it.copy(isLoading = false, error = result.error.name) }
+                is HttpResult.Success -> {
+                    val word = result.data
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            word = word.word,
+                            phonetic = word.phonetic,
+                            partOfSpeech = word.meanings.firstOrNull()?.partOfSpeech ?: "",
+                            definitions = word.meanings.flatMap { it.definitions }.map { it.definition },
+                            examples = word.meanings.flatMap { it.definitions }.mapNotNull { it.example },
+                            etymology = ""
+                        )
                     }
                 }
-            }.launchIn(this)
-        }
+
+                is HttpResult.Failure -> {
+                    _state.update { it.copy(isLoading = false, error = result.error.name) }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onAction(action: HomeAction) {

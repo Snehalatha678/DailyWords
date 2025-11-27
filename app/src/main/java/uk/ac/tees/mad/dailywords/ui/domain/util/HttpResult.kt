@@ -7,13 +7,19 @@ import io.ktor.serialization.JsonConvertException
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
 
-suspend fun <T> httpResult(block: suspend () -> T): Result<T, DataError.Remote> {
+sealed class HttpResult<out T> {
+    data class Success<T>(val data: T) : HttpResult<T>()
+    data class Failure(val error: DataError.Remote) : HttpResult<Nothing>()
+    object Loading : HttpResult<Nothing>()
+}
+
+suspend fun <T> httpResult(block: suspend () -> T): HttpResult<T> {
     return try {
-        Result.Success(block())
+        HttpResult.Success(block())
     } catch (e: CancellationException) {
         throw e
     } catch (e: Throwable) {
-        Result.Failure(e.toHttpError())
+        HttpResult.Failure(e.toHttpError())
     }
 }
 

@@ -18,28 +18,25 @@ class WordRepositoryImpl(
         emit(HttpResult.Loading)
 
         val localWords = dao.getWords(word).map { it.toWord() }
-        emit(HttpResult.Success(localWords))
-
-        val isDbEmpty = localWords.isEmpty() && word.isBlank()
-        val shouldJustLoadFromCache = !isDbEmpty
-        if (shouldJustLoadFromCache) {
+        if (localWords.isNotEmpty()) {
+            emit(HttpResult.Success(localWords))
             return@flow
         }
 
-        when (val remoteWordsResult = httpResult { api.getWord(word) }) {
-            is HttpResult.Success -> {
-                val remoteWords = remoteWordsResult.data
-                remoteWords?.let {
-                    dao.deleteAllWords()
-                    dao.insertWords(it.map { it.toWordEntity() })
-                    emit(HttpResult.Success(dao.getWords("").map { it.toWord() }))
+        if (word.isBlank()) {
+            when (val remoteResult = httpResult { api.getWord(word) }) {
+                is HttpResult.Success -> {
+                    remoteResult.data.let { remoteWords ->
+                        dao.deleteAllWords()
+                        dao.insertWords(remoteWords.map { it.toWordEntity() })
+                        emit(HttpResult.Success(dao.getWords("").map { it.toWord() }))
+                    }
                 }
+                is HttpResult.Failure -> {
+                    emit(remoteResult)
+                }
+                else -> {}
             }
-
-            is HttpResult.Failure -> {
-                emit(remoteWordsResult)
-            }
-            else -> {}
         }
     }
 }
