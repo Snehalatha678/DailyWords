@@ -84,10 +84,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
 
     // Ktor
-    implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
+    implementation("io.ktor:ktor-client-android:3.3.2")
+    implementation("io.ktor:ktor-client-okhttp:3.3.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.3.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.2")
+    implementation("io.ktor:ktor-client-logging:3.3.2")
 
     // Coil
     implementation(libs.coil.compose)
@@ -109,6 +110,5 @@ dependencies {
     //navigation
 
     implementation(libs.androidx.navigation.compose)
-    implementation("androidx.compose.material:material:1.9.4")
 
 }

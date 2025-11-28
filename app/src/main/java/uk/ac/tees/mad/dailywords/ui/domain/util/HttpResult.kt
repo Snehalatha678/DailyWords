@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.dailywords.ui.domain.util
 
+import android.util.Log
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.ServerResponseException
@@ -19,6 +20,7 @@ suspend fun <T> httpResult(block: suspend () -> T): HttpResult<T> {
     } catch (e: CancellationException) {
         throw e
     } catch (e: Throwable) {
+        Log.e("httpResult", "Request failed: ${e.message}", e)
         HttpResult.Failure(e.toHttpError())
     }
 }

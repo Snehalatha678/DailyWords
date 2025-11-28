@@ -32,6 +32,7 @@ class AuthRepositoryImpl(
            val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
 
           val user = result.user
+
             requireNotNull(user) {
                 "firebase user was null after successful registration"
             }

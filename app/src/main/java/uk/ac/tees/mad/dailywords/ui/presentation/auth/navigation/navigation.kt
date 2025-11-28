@@ -61,7 +61,9 @@ fun Navigation(navcontroller: NavHostController){
             )
         }
 
-        composable<GraphRoutes.Home> { HomeRoot() }
+        composable<GraphRoutes.Home> { 
+            HomeRoot()
+        }
 
 
     }

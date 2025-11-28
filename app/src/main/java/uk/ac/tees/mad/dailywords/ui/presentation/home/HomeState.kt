@@ -1,14 +1,19 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.home
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import uk.ac.tees.mad.dailywords.ui.domain.word.Word
+
+data class BottomNavItem(
+    val label: String,
+    val icon: ImageVector,
+    val isSelected: Boolean = false
+)
+
 data class HomeState(
-    val word: String = "Word",
-    val phonetic: String = "/fəˈnet.ɪk/",
-    val partOfSpeech: String = "noun",
-    val definitions: List<String> = listOf("The definition of the word will appear here."),
-    val examples: List<String> = listOf("An example of how to use the word in a sentence."),
-    val etymology: String? = null,
-    val isBookmarked: Boolean = false,
+    val word: Word? = null,
     val isLoading: Boolean = false,
-    val showEtymology: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val bottomNavItems: List<BottomNavItem> = emptyList(),
+    val bookmarkedWords: List<String> = emptyList(),
+    val streakCount: Int = 0
 )

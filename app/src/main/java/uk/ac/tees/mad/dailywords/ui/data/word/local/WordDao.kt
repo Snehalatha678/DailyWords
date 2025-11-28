@@ -4,19 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+import uk.ac.tees.mad.dailywords.ui.data.word.local.model.WordEntity
 
 @Dao
 interface WordDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWords(words: List<WordEntity>)
+    suspend fun insertWord(word: WordEntity)
 
-    @Query("DELETE FROM wordentity WHERE word IN(:words)")
-    suspend fun deleteWords(words: List<String>)
+    @Query("SELECT * FROM wordentity WHERE word = :word")
+    suspend fun getWord(word: String): WordEntity?
 
-    @Query("SELECT * FROM wordentity WHERE word LIKE '%' || :word || '%'")
-    suspend fun getWords(word: String): List<WordEntity>
-
-    @Query("DELETE FROM wordentity")
-    suspend fun deleteAllWords()
+    @Query("SELECT * FROM wordentity WHERE isBookmarked = 1")
+    fun getBookmarkedWords(): Flow<List<WordEntity>>
 }
