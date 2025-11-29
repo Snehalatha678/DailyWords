@@ -1,7 +1,6 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.home
 
 import android.content.Context
-import android.speech.tts.TextToSpeech
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.dailywords.ui.domain.util.HttpResult
+import uk.ac.tees.mad.dailywords.ui.domain.util.TextToSpeechProvider
 import uk.ac.tees.mad.dailywords.ui.domain.word.Word
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.AddBookmark
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.GetBookmarkedWords
@@ -28,7 +28,7 @@ class HomeViewModel(
     private val addBookmark: AddBookmark,
     private val removeBookmark: RemoveBookmark,
     private val getBookmarkedWords: GetBookmarkedWords,
-    private val textToSpeech: TextToSpeech,
+    private val textToSpeechProvider: TextToSpeechProvider,
     private val context: Context
 ) : ViewModel() {
 
@@ -152,16 +152,7 @@ class HomeViewModel(
             }
 
             is HomeAction.OnPronunciationClick -> {
-                textToSpeech.speak(
-                    action.word,
-                    TextToSpeech.QUEUE_FLUSH,
-                    null,
-                    null
-                )
-            }
-
-            is HomeAction.OnMicClick -> {
-                // Handle mic click
+                textToSpeechProvider.speak(action.word)
             }
 
             HomeAction.OnRefresh -> {
@@ -172,5 +163,9 @@ class HomeViewModel(
                 // No-op
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
     }
 }

@@ -52,6 +52,46 @@ class WordRepositoryImpl(
         }
     }
 
+    override fun getRandomWord(): Flow<HttpResult<Word>> = flow {
+        emit(HttpResult.Loading)
+        if (networkManager.isConnected()) {
+            when (val result = httpResult { api.getRandomWord() }) {
+                is HttpResult.Success -> {
+                    val randomWord = result.data.word.firstOrNull()
+                    if (randomWord == null) {
+                        emit(HttpResult.Failure(DataError.Remote.NOT_FOUND))
+                        return@flow
+                    }
+                    getWord(randomWord).collect {
+                        when (it) {
+                            is HttpResult.Success -> {
+                                val word = it.data.firstOrNull()
+                                if (word != null) {
+                                    emit(HttpResult.Success(word))
+                                } else {
+                                    emit(HttpResult.Failure(DataError.Remote.NOT_FOUND))
+                                }
+                            }
+                            is HttpResult.Failure -> {
+                                emit(it)
+                            }
+                            is HttpResult.Loading -> {
+                                // Do nothing while the inner getWord is loading
+                            }
+                        }
+                    }
+                }
+                is HttpResult.Failure -> {
+                    emit(result)
+                }
+                else -> {
+                }
+            }
+        } else {
+            emit(HttpResult.Failure(DataError.Remote.NO_INTERNET))
+        }
+    }
+
     override suspend fun addBookmark(word: Word) {
         dao.insertWord(word.toWordEntity().copy(isBookmarked = true))
     }

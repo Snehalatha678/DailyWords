@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Quiz
@@ -174,34 +173,22 @@ fun WordContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Audio Buttons
+        // Audio Button
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
             IconButton(
                 onClick = { onAction(HomeAction.OnPronunciationClick(word.word)) },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = "Pronounce",
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-            IconButton(
-                onClick = { onAction(HomeAction.OnMicClick(word.word)) },
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Record Pronunciation",
+                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                    contentDescription = "Pronounce",
                     modifier = Modifier.size(32.dp),
                     tint = Color.White
                 )
