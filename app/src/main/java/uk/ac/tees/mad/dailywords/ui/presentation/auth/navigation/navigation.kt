@@ -9,6 +9,7 @@ import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccou
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.practice.PracticeRoot
 
 @Composable
 fun Navigation(navcontroller: NavHostController){
@@ -62,7 +63,15 @@ fun Navigation(navcontroller: NavHostController){
         }
 
         composable<GraphRoutes.Home> { 
-            HomeRoot()
+            HomeRoot(
+                onNavigateToPractice = { navcontroller.navigate(GraphRoutes.Practice) }
+            )
+        }
+
+        composable<GraphRoutes.Practice> {
+            PracticeRoot(
+                onBackClick = { navcontroller.navigateUp() }
+            )
         }
 
 

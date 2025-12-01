@@ -12,4 +12,6 @@ sealed class GraphRoutes {
     data object Forgot : GraphRoutes()
     @Serializable
     data object Home: GraphRoutes()
+    @Serializable
+    data object Practice: GraphRoutes()
 }

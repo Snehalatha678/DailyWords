@@ -19,12 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.Quiz
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -33,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,16 +50,20 @@ import org.koin.androidx.compose.koinViewModel
 import uk.ac.tees.mad.dailywords.ui.domain.word.Word
 import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 
-
 @Composable
 fun HomeRoot(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onNavigateToPractice: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            viewModel.onAction(action) {
+                onNavigateToPractice()
+            }
+        }
     )
 }
 
@@ -107,19 +108,23 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomAppBar {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    state.bottomNavItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = item.isSelected,
-                            onClick = { /*TODO*/ },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
-                        )
-                    }
+            NavigationBar {
+                state.bottomNavItems.forEach { item ->
+                    NavigationBarItem(
+                        selected = item.isSelected,
+                        onClick = {
+                            if (item.label == "Practice") {
+                                onAction(HomeAction.OnNavigateToPractice)
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (item.isSelected) item.selectedIcon else item.icon,
+                                contentDescription = item.label
+                            )
+                        },
+                        label = { Text(item.label) }
+                    )
                 }
             }
         }
@@ -202,11 +207,11 @@ fun WordContent(
             InfoCard(title = it.partOfSpeech, subtitle = "Meaning", content = it.definitions.joinToString { it.definition })
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         // Example Usage Card
         word.meanings.forEach { meaning ->
             meaning.definitions.forEach {
-                if(it.example != null) {
+                if (it.example != null) {
                     InfoCard(
                         title = "Example Usage",
                         subtitle = "Contextual sentence",
@@ -252,12 +257,6 @@ private fun Preview() {
             phonetic = "/ɪˈfɛmərəl/",
             meanings = listOf(),
             sourceUrls = listOf()
-        ),
-        bottomNavItems = listOf(
-            BottomNavItem(label = "Home", icon = Icons.Default.Home, isSelected = true),
-            BottomNavItem(label = "Practice", icon = Icons.Default.MenuBook),
-            BottomNavItem(label = "Quiz", icon = Icons.Outlined.Quiz),
-            BottomNavItem(label = "Profile", icon = Icons.Default.Person)
         )
     )
     DailyWordsTheme {

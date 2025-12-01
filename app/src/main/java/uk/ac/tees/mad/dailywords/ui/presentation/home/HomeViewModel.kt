@@ -133,7 +133,7 @@ class HomeViewModel(
         }
     }
 
-    fun onAction(action: HomeAction) {
+    fun onAction(action: HomeAction, onNavigate: () -> Unit = {}) {
         when (action) {
             is HomeAction.OnBookmarkClick -> {
                 val word = state.value.word?.copy()
@@ -162,6 +162,7 @@ class HomeViewModel(
             HomeAction.OnNextClick -> {
                 // No-op
             }
+            HomeAction.OnNavigateToPractice -> onNavigate()
         }
     }
 
