@@ -14,7 +14,6 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import okhttp3.Dns
 import org.koin.android.ext.koin.androidApplication
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import uk.ac.tees.mad.dailywords.ui.data.AuthRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.etymology.EtymologyRepositoryImpl
@@ -31,12 +30,6 @@ import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.AddBookmark
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.GetBookmarkedWords
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.GetRandomWord
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.RemoveBookmark
-import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountViewModel
-import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotViewModel
-import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginViewModel
-import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeViewModel
-import uk.ac.tees.mad.dailywords.ui.presentation.practice.PracticeViewModel
-import uk.ac.tees.mad.dailywords.ui.presentation.practice.voicetotext.VoiceToTextParser
 
 val appModule = module {
 
@@ -103,20 +96,10 @@ val appModule = module {
     factory { GetBookmarkedWords(get()) }
 
     // TextToSpeech
-    single { TextToSpeechProvider(androidApplication()) }
-
-    // VoiceToText
-    single { VoiceToTextParser(androidApplication()) }
+    single { TextToSpeechProvider(androidApplication(), null) }
 
     // NetworkManager
     single {
         NetworkManager(androidApplication())
     }
-
-    // ViewModel
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), androidApplication()) }
-    viewModel { LoginViewModel(get()) }
-    viewModel { CreateAccountViewModel(get()) }
-    viewModel { ForgotViewModel(get()) }
-    viewModel { PracticeViewModel(get()) }
 }

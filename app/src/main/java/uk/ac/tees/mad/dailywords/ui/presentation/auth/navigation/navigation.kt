@@ -64,11 +64,13 @@ fun Navigation(navcontroller: NavHostController){
 
         composable<GraphRoutes.Home> { 
             HomeRoot(
-                onNavigateToPractice = { navcontroller.navigate(GraphRoutes.Practice) }
+                onNavigateToPractice = { word, phonetic ->
+                    navcontroller.navigate(GraphRoutes.Practice(word, phonetic))
+                }
             )
         }
 
-        composable<GraphRoutes.Practice> {
+        composable<GraphRoutes.Practice> { 
             PracticeRoot(
                 onBackClick = { navcontroller.navigateUp() }
             )

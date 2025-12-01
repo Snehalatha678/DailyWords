@@ -53,7 +53,7 @@ import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 @Composable
 fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToPractice: () -> Unit
+    onNavigateToPractice: (String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -61,7 +61,7 @@ fun HomeRoot(
         state = state,
         onAction = { action ->
             viewModel.onAction(action) {
-                onNavigateToPractice()
+                onNavigateToPractice(state.word?.word ?: "", state.word?.phonetic ?: "")
             }
         }
     )

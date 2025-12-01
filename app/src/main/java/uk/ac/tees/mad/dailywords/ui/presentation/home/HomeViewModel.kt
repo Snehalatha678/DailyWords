@@ -1,6 +1,6 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.home
 
-import android.content.Context
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ class HomeViewModel(
     private val removeBookmark: RemoveBookmark,
     private val getBookmarkedWords: GetBookmarkedWords,
     private val textToSpeechProvider: TextToSpeechProvider,
-    private val context: Context
+    private val application: Application
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -90,7 +90,7 @@ class HomeViewModel(
     }
 
     private fun updateStreak() {
-        val sharedPreferences = context.getSharedPreferences("streak_prefs", Context.MODE_PRIVATE)
+        val sharedPreferences = application.getSharedPreferences("streak_prefs", Application.MODE_PRIVATE)
         val lastVisitDate = sharedPreferences.getString("last_visit_date", null)
         val streakCount = sharedPreferences.getInt("streak_count", 0)
 

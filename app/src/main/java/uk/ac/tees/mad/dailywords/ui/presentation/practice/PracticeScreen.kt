@@ -1,5 +1,9 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.practice
 
+import android.Manifest
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -25,7 +29,6 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,7 +38,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -46,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +58,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import uk.ac.tees.mad.dailywords.ui.presentation.practice.voicetotext.VoiceToTextState
 import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
-import kotlin.random.Random
 
 @Composable
 fun PracticeRoot(
@@ -63,10 +65,23 @@ fun PracticeRoot(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (!isGranted) {
+                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
 
     PracticeScreen(
         state = state,
         onAction = {
+            if (it is PracticeAction.OnStartRecording) {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
             viewModel.onAction(it) {
                 onBackClick()
             }
@@ -94,23 +109,6 @@ fun PracticeScreen(
                 )
             )
         },
-        bottomBar = {
-            BottomAppBar {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    state.bottomNavItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = item.isSelected,
-                            onClick = { /*TODO*/ },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
-                        )
-                    }
-                }
-            }
-        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -227,7 +225,7 @@ fun RecordingSection(state: PracticeState, onAction: (PracticeAction) -> Unit) {
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onAction(PracticeAction.OnPlayOriginal) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
@@ -239,7 +237,8 @@ fun RecordingSection(state: PracticeState, onAction: (PracticeAction) -> Unit) {
                 Text("Play original")
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onAction(PracticeAction.OnPlayRecording) },
+                enabled = state.isRecordingAvailable,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
@@ -320,8 +319,8 @@ private fun Preview() {
             PracticeAttempt("10:28 AM", "Try again!", Color(0xFFD93025)),
             PracticeAttempt("Yesterday", "Good attempt.", Color(0xFFF9AB00))
         ),
-        bottomNavItems = listOf(), // Simplified for preview
-        voiceState = VoiceToTextState(isSpeaking = true)
+        voiceState = VoiceToTextState(isSpeaking = true, spokenText = "Serendipity"),
+        isRecordingAvailable = true
     )
     DailyWordsTheme {
         PracticeScreen(

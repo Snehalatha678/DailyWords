@@ -5,14 +5,17 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import java.util.Locale
 
-class TextToSpeechProvider(context: Context) : TextToSpeech.OnInitListener {
+class TextToSpeechProvider(context: Context, onReady: (() -> Unit)? = null) : TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null
     private var isInitialized = false
     private var pendingText: String? = null
 
+    private val initializationListeners = mutableListOf<() -> Unit>()
+
     init {
         Log.i("TTS", "Initializing TextToSpeech.")
+        onReady?.let { initializationListeners.add(it) }
         tts = TextToSpeech(context, this)
     }
 
@@ -26,6 +29,9 @@ class TextToSpeechProvider(context: Context) : TextToSpeech.OnInitListener {
             } else {
                 Log.i("TTS", "Language set to US English.")
             }
+            initializationListeners.forEach { it.invoke() }
+            initializationListeners.clear()
+
             pendingText?.let {
                 Log.i("TTS", "Speaking pending text: $it")
                 speak(it)

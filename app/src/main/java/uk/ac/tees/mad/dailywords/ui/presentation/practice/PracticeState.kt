@@ -25,5 +25,6 @@ data class PracticeState(
     val userPronunciation: String = "",
     val pronunciationFeedback: String = "",
     val attemptCount: Int = 0,
-    val accuracyScore: Float = 0.0f
+    val accuracyScore: Float = 0.0f,
+    val isRecordingAvailable: Boolean = false
 )
