@@ -1,7 +1,13 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.profile
 
+import android.Manifest
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,50 +24,92 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Quiz
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import uk.ac.tees.mad.dailywords.R
+import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
+import uk.ac.tees.mad.dailywords.ui.presentation.home.BottomNavItem
 import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileRoot(
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = koinViewModel(),
+    onLogout: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToPractice: () -> Unit,
+    onNavigateToQuiz: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            ProfileEvent.LogoutSuccess -> onLogout()
+        }
+    }
+
+    val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+    LaunchedEffect(Unit) {
+        if (!notificationPermissionState.status.isGranted) {
+            notificationPermissionState.launchPermissionRequest()
+        }
+    }
+
     ProfileScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        onNavigateToHome = onNavigateToHome,
+        onNavigateToPractice = onNavigateToPractice,
+        onNavigateToQuiz = onNavigateToQuiz
     )
 }
 
@@ -70,165 +118,341 @@ fun ProfileRoot(
 fun ProfileScreen(
     state: ProfileState,
     onAction: (ProfileAction) -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToPractice: () -> Unit,
+    onNavigateToQuiz: () -> Unit
 ) {
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { onAction(ProfileAction.OnProfileImageChange(it)) }
+        }
+    )
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Profile & Settings",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+            CenterAlignedTopAppBar(
+                title = { Text("Settings & Profile") },
+                colors = androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color(0xFFF0F4F8)
                 )
             )
+        },
+        containerColor = Color(0xFFF0F4F8),
+        bottomBar = {
+            NavigationBar {
+                val bottomNavItems = listOf(
+                    BottomNavItem("Home", Icons.Outlined.Home, Icons.Filled.Home),
+                    BottomNavItem("Practice", Icons.Outlined.MenuBook, Icons.AutoMirrored.Filled.MenuBook),
+                    BottomNavItem("Quiz", Icons.Outlined.Quiz, Icons.Outlined.Quiz),
+                    BottomNavItem("Profile", Icons.Outlined.Person, Icons.Filled.Person, true)
+                )
+                bottomNavItems.forEach { item ->
+                    NavigationBarItem(
+                        selected = item.isSelected,
+                        onClick = {
+                            when (item.label) {
+                                "Home" -> onNavigateToHome()
+                                "Practice" -> onNavigateToPractice()
+                                "Quiz" -> onNavigateToQuiz()
+                            }
+                        },
+                        icon = { Icon(if (item.isSelected) item.selectedIcon else item.icon, contentDescription = item.label) },
+                        label = { Text(item.label) }
+                    )
+                }
+            }
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFEBEBFF))
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text(text = state.name, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                            Text(text = state.learningLevel, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    ProfileTextField(label = "Name", value = state.name, onValueChange = { onAction(ProfileAction.OnNameChanged(it)) })
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProfileTextField(label = "Email", value = state.email, onValueChange = { onAction(ProfileAction.OnEmailChanged(it)) })
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProfileTextField(label = "Learning Level", value = state.learningLevel, onValueChange = { onAction(ProfileAction.OnLearningLevelChanged(it)) })
-                }
+            // Profile Section
+            Section(title = "Profile") {
+                ProfileCard(
+                    image = state.profileImage,
+                    name = state.name,
+                    email = state.email,
+                    onImageClick = { imagePickerLauncher.launch("image/*") },
+                    onLogoutClick = { onAction(ProfileAction.OnLogoutClicked) }
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                Column(modifier = Modifier.padding(24.dp)) {
-                    Text(text = "App Settings", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SettingSwitch(
-                        text = "Daily Notifications",
-                        checked = state.dailyNotifications,
-                        onCheckedChange = { onAction(ProfileAction.OnDailyNotificationsToggled(it)) }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SettingSwitch(
-                        text = "Dark Mode",
-                        checked = state.darkMode,
-                        onCheckedChange = { onAction(ProfileAction.OnDarkModeToggled(it)) }
-                    )
-                }
+            // Hydration Settings
+            Section(title = "Hydration Settings") {
+                HydrationSettingsCard(
+                    learningLevel = state.learningLevel,
+                    onLearningLevelChange = { onAction(ProfileAction.OnLearningLevelChanged(it)) },
+                    dailyNotifications = state.dailyNotifications,
+                    onDailyNotificationsToggled = { onAction(ProfileAction.OnDailyNotificationsToggled(it)) },
+                    darkMode = state.darkMode,
+                    onDarkModeToggled = { onAction(ProfileAction.OnDarkModeToggled(it)) },
+                    onSaveChanges = { onAction(ProfileAction.OnSaveChangesClick) }
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Privacy & Security
+            Section(title = "Privacy & Security") {
+                PrivacyCard()
+            }
 
-            ProfileButton(
-                text = "Bookmarks",
-                icon = Icons.Default.Bookmark,
-                onClick = { onAction(ProfileAction.OnBookmarksClicked) }
+            // Account Management
+            Section(title = "Account Management") {
+                AccountManagementCard(
+                    onResetClick = { onAction(ProfileAction.OnResetStreakClicked) }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+
+@Composable
+private fun Section(title: String, content: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        content()
+    }
+}
+
+@Composable
+private fun ProfileCard(
+    image: Any?,
+    name: String,
+    email: String,
+    onImageClick: () -> Unit,
+    onLogoutClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = image),
+                contentDescription = "Profile Picture",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .clickable(onClick = onImageClick) // Pass the onImageClick lambda here
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            ProfileButton(
-                text = "Reset Streak",
-                icon = Icons.Default.Settings,
-                onClick = { onAction(ProfileAction.OnResetStreakClicked) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = { onAction(ProfileAction.OnLogoutClicked) },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE94F64)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Logout", fontSize = 16.sp)
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = email, color = Color.Gray, fontSize = 14.sp)
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Row(modifier = Modifier.clickable(onClick = onLogoutClick), verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                    contentDescription = "Logout",
+                    tint = Color.Red
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Logout", color = Color.Red, fontWeight = FontWeight.SemiBold)
             }
         }
     }
 }
 
 @Composable
-fun ProfileTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit
+private fun HydrationSettingsCard(
+    learningLevel: String,
+    onLearningLevelChange: (String) -> Unit,
+    dailyNotifications: Boolean,
+    onDailyNotificationsToggled: (Boolean) -> Unit,
+    darkMode: Boolean,
+    onDarkModeToggled: (Boolean) -> Unit,
+    onSaveChanges: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(bottom = 4.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val reminderOptions = listOf("Beginner", "Intermediate", "Advanced")
+
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "App Settings", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Learning Level
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Learning Level")
+                Box {
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFF0F4F8))
+                            .clickable { isDropdownExpanded = true }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(learningLevel, textAlign = TextAlign.Center)
+                        Icon(Icons.Default.ArrowDropDown, "Dropdown")
+                    }
+                    DropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false }
+                    ) {
+                        reminderOptions.forEach { level ->
+                            DropdownMenuItem(
+                                text = { Text(level) },
+                                onClick = {
+                                    onLearningLevelChange(level)
+                                    isDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Daily Notifications
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Daily Notifications")
+                Switch(checked = dailyNotifications, onCheckedChange = onDailyNotificationsToggled)
+            }
+
+            // Dark Mode
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Dark Mode")
+                Switch(checked = darkMode, onCheckedChange = onDarkModeToggled)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Save Button
+            Button(
+                onClick = onSaveChanges,
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF15A4B8)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Save, contentDescription = null, tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Save Changes", color = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyCard() {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Privacy & Data", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+            PrivacyInfoItem(
+                icon = Icons.Default.Security,
+                text = "Your personal data is securely stored on Firebase, ensuring that your information is protected."
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            PrivacyInfoItem(
+                icon = Icons.Default.Notifications,
+                text = "Notifications are used to provide you with daily words and reminders to help you learn."
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            PrivacyInfoItem(
+                icon = Icons.Default.WifiOff,
+                text = "The app is designed to work offline, so you can access your words and practice even without an internet connection."
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrivacyInfoItem(icon: ImageVector, text: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = Color(0xFF15A4B8),
+            modifier = Modifier.padding(top = 2.dp)
         )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = text, color = Color.Gray, fontSize = 14.sp, lineHeight = 20.sp)
     }
 }
 
 @Composable
-fun SettingSwitch(
-    text: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+private fun AccountManagementCard(onResetClick: () -> Unit) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF6F6)),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.clickable(onClick = onResetClick),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Reset",
+                    tint = Color.Red
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Reset Streak", color = Color.Red, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Warning: This action will permanently delete your streak, and this action cannot be undone.",
+                color = Color(0xFFD32F2F),
+                fontSize = 12.sp,
+                lineHeight = 16.sp
+            )
+        }
     }
 }
 
 @Composable
-fun ProfileButton(
-    text: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit
-) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Icon(icon, contentDescription = text)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, fontSize = 16.sp)
+fun ObserveAsEvents(flow: Flow<ProfileEvent>, onEvent: (ProfileEvent) -> Unit) {
+    LaunchedEffect(flow) {
+        flow.collect {
+            onEvent(it)
+        }
     }
 }
 
@@ -236,10 +460,13 @@ fun ProfileButton(
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    DailyWordsTheme {
+    DailyWordsTheme() {
         ProfileScreen(
             state = ProfileState(),
-            onAction = {}
+            onAction = {},
+            onNavigateToHome = {},
+            onNavigateToPractice = {},
+            onNavigateToQuiz = {}
         )
     }
 }

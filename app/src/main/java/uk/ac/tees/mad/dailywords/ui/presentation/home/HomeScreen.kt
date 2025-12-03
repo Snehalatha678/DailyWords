@@ -53,7 +53,8 @@ import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 @Composable
 fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToPractice: (String, String) -> Unit
+    onNavigateToPractice: (String, String) -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -61,7 +62,11 @@ fun HomeRoot(
         state = state,
         onAction = { action ->
             viewModel.onAction(action) {
-                onNavigateToPractice(state.word?.word ?: "", state.word?.phonetic ?: "")
+                when (action) {
+                    is HomeAction.OnNavigateToPractice -> onNavigateToPractice(state.word?.word ?: "", state.word?.phonetic ?: "")
+                    is HomeAction.OnNavigateToProfile -> onNavigateToProfile()
+                    else -> {}
+                }
             }
         }
     )
@@ -113,8 +118,9 @@ fun HomeScreen(
                     NavigationBarItem(
                         selected = item.isSelected,
                         onClick = {
-                            if (item.label == "Practice") {
-                                onAction(HomeAction.OnNavigateToPractice)
+                            when (item.label) {
+                                "Practice" -> onAction(HomeAction.OnNavigateToPractice)
+                                "Profile" -> onAction(HomeAction.OnNavigateToProfile)
                             }
                         },
                         icon = {

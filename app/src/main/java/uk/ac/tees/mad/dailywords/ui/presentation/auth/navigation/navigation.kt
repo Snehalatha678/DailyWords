@@ -10,6 +10,7 @@ import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.practice.PracticeRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.profile.ProfileRoot
 
 @Composable
 fun Navigation(navcontroller: NavHostController){
@@ -66,13 +67,29 @@ fun Navigation(navcontroller: NavHostController){
             HomeRoot(
                 onNavigateToPractice = { word, phonetic ->
                     navcontroller.navigate(GraphRoutes.Practice(word, phonetic))
-                }
+                },
+                onNavigateToProfile = { navcontroller.navigate(GraphRoutes.Profile) }
             )
         }
 
         composable<GraphRoutes.Practice> { 
             PracticeRoot(
                 onBackClick = { navcontroller.navigateUp() }
+            )
+        }
+
+        composable<GraphRoutes.Profile> { 
+            ProfileRoot(
+                onLogout = {
+                    navcontroller.navigate(GraphRoutes.Login) {
+                        popUpTo(GraphRoutes.Home) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToHome = { navcontroller.navigate(GraphRoutes.Home) },
+                onNavigateToPractice = { navcontroller.navigate(GraphRoutes.Practice("", "")) },
+                onNavigateToQuiz = { /* TODO */ }
             )
         }
 

@@ -111,4 +111,14 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    // Supabase
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.2.6")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+
+    implementation(libs.accompanist.permissions)
+
 }

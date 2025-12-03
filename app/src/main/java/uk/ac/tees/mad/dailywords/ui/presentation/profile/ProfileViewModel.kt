@@ -1,30 +1,60 @@
 package uk.ac.tees.mad.dailywords.ui.presentation.profile
 
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import uk.ac.tees.mad.dailywords.ui.data.repository.SupabaseStorageRepository
 
-class ProfileViewModel : ViewModel() {
-
-    private var hasLoadedInitialData = false
+class ProfileViewModel(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+    private val storageRepository: SupabaseStorageRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
-    val state = _state
-        .onStart {
-            if (!hasLoadedInitialData) {
-                /** Load initial data here **/
-                hasLoadedInitialData = true
+    val state = _state.asStateFlow()
+
+    private val eventChannel = Channel<ProfileEvent>()
+    val events = eventChannel.receiveAsFlow()
+
+    init {
+        loadUserData()
+    }
+
+    private fun loadUserData() {
+        viewModelScope.launch(ioDispatcher) {
+            val user = auth.currentUser
+            user?.let {
+                firestore.collection("users").document(it.uid).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            _state.update {
+                                it.copy(
+                                    name = document.getString("name") ?: "",
+                                    email = document.getString("email") ?: "",
+                                    learningLevel = document.getString("learningLevel") ?: "",
+                                    dailyNotifications = document.getBoolean("dailyNotifications") ?: true,
+                                    darkMode = document.getBoolean("darkMode") ?: false,
+                                    profileImage = document.getString("profile_image_url")
+                                )
+                            }
+                        }
+                    }
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ProfileState()
-        )
+    }
 
     fun onAction(action: ProfileAction) {
         when (action) {
@@ -33,15 +63,38 @@ class ProfileViewModel : ViewModel() {
             is ProfileAction.OnLearningLevelChanged -> _state.update { it.copy(learningLevel = action.level) }
             is ProfileAction.OnDailyNotificationsToggled -> _state.update { it.copy(dailyNotifications = action.isEnabled) }
             is ProfileAction.OnDarkModeToggled -> _state.update { it.copy(darkMode = action.isEnabled) }
-            ProfileAction.OnBookmarksClicked -> {
-                // TODO: Handle Bookmarks Click
+            is ProfileAction.OnProfileImageChange -> {
+                viewModelScope.launch(ioDispatcher) {
+                    try {
+                        val result = storageRepository.uploadProfilePicture(action.imageUri)
+                        _state.update { it.copy(profileImage = result.remoteUrl) }
+                    } catch (e: Exception) {
+                        Log.e("ProfileViewModel", "Failed to upload profile picture", e)
+                    }
+                }
             }
-            ProfileAction.OnResetStreakClicked -> {
-                // TODO: Handle Reset Streak Click
+            ProfileAction.OnSaveChangesClick -> {
+                viewModelScope.launch() {
+                    val user = auth.currentUser
+                    user?.let {
+                        val userData = hashMapOf(
+                            "name" to state.value.name,
+                            "email" to state.value.email,
+                            "learningLevel" to state.value.learningLevel,
+                            "dailyNotifications" to state.value.dailyNotifications,
+                            "darkMode" to state.value.darkMode
+                        )
+                        firestore.collection("users").document(it.uid).set(userData)
+                    }
+                }
             }
             ProfileAction.OnLogoutClicked -> {
-                // TODO: Handle Logout Click
+                viewModelScope.launch(ioDispatcher) {
+                    auth.signOut()
+                    eventChannel.send(ProfileEvent.LogoutSuccess)
+                }
             }
+            else -> {}
         }
     }
 }

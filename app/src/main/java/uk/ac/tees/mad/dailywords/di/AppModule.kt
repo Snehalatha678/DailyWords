@@ -18,6 +18,8 @@ import org.koin.dsl.module
 import uk.ac.tees.mad.dailywords.ui.data.AuthRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.etymology.EtymologyRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.etymology.remote.EtymologyApi
+import uk.ac.tees.mad.dailywords.ui.data.repository.SupabaseStorageRepository
+import uk.ac.tees.mad.dailywords.ui.data.repository.SupabaseStorageRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.word.WordRepositoryImpl
 import uk.ac.tees.mad.dailywords.ui.data.word.local.WordDatabase
 import uk.ac.tees.mad.dailywords.ui.data.word.remote.WordApi
@@ -74,8 +76,8 @@ val appModule = module {
             WordDatabase::class.java,
             WordDatabase.DATABASE_NAME
         )
-        .fallbackToDestructiveMigration()
-        .build()
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     // Repository
@@ -88,6 +90,8 @@ val appModule = module {
     }
     single<EtymologyRepository> { EtymologyRepositoryImpl(get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<SupabaseStorageRepository> { SupabaseStorageRepositoryImpl(get(), androidApplication(), get(), get()) }
+
 
     //UseCases
     factory { GetRandomWord(get()) }
@@ -102,4 +106,5 @@ val appModule = module {
     single {
         NetworkManager(androidApplication())
     }
+
 }

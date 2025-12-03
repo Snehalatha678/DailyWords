@@ -30,6 +30,7 @@ koin-bom = "4.1.1"
 firebaseFirestore = "26.0.2"
 firebaseDatabase = "22.0.1"
 firebaseFirestoreKtx = "26.0.2"
+accompanist = "0.37.3"
 
 [libraries]
 androidx-compose-material-pull-refresh = { module = "androidx.compose.material:material-pull-refresh", version.ref = "materialPullRefresh" }
@@ -99,6 +100,8 @@ koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation" 
 koin-androidx-compose    = { module = "io.insert-koin:koin-androidx-compose" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

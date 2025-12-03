@@ -163,6 +163,7 @@ class HomeViewModel(
                 // No-op
             }
             HomeAction.OnNavigateToPractice -> onNavigate()
+            HomeAction.OnNavigateToProfile -> onNavigate()
         }
     }
 

@@ -6,4 +6,5 @@ sealed interface HomeAction {
     data class OnPronunciationClick(val word: String) : HomeAction
     object OnNextClick : HomeAction
     object OnNavigateToPractice : HomeAction
+    object OnNavigateToProfile : HomeAction
 }
