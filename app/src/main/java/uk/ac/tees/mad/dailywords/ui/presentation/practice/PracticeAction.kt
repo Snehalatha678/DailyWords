@@ -6,4 +6,7 @@ sealed interface PracticeAction {
     data object OnStopRecording : PracticeAction
     data object OnPlayOriginal : PracticeAction
     data object OnPlayRecording : PracticeAction
+    data object OnNavigateToHome : PracticeAction
+    data object OnNavigateToQuiz : PracticeAction
+    data object OnNavigateToProfile : PracticeAction
 }

@@ -13,4 +13,5 @@ sealed interface ProfileAction {
     data object OnResetStreakClicked : ProfileAction
     data object OnLogoutClicked : ProfileAction
     data object OnSaveChangesClick : ProfileAction
+    data object OnNavigateToQuiz : ProfileAction
 }

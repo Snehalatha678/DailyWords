@@ -18,4 +18,7 @@ interface WordDao {
 
     @Query("SELECT * FROM wordentity WHERE isBookmarked = 1")
     fun getBookmarkedWords(): Flow<List<WordEntity>>
+
+    @Query("SELECT * FROM wordentity")
+    suspend fun getAllWordsSync(): List<WordEntity>
 }

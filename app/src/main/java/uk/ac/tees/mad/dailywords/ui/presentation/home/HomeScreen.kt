@@ -54,7 +54,8 @@ import uk.ac.tees.mad.dailywords.ui.theme.DailyWordsTheme
 fun HomeRoot(
     viewModel: HomeViewModel = koinViewModel(),
     onNavigateToPractice: (String, String) -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onNavigateToQuiz: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -65,6 +66,7 @@ fun HomeRoot(
                 when (action) {
                     is HomeAction.OnNavigateToPractice -> onNavigateToPractice(state.word?.word ?: "", state.word?.phonetic ?: "")
                     is HomeAction.OnNavigateToProfile -> onNavigateToProfile()
+                    is HomeAction.OnNavigateToQuiz -> onNavigateToQuiz()
                     else -> {}
                 }
             }
@@ -121,6 +123,7 @@ fun HomeScreen(
                             when (item.label) {
                                 "Practice" -> onAction(HomeAction.OnNavigateToPractice)
                                 "Profile" -> onAction(HomeAction.OnNavigateToProfile)
+                                "Quiz" -> onAction(HomeAction.OnNavigateToQuiz)
                             }
                         },
                         icon = {

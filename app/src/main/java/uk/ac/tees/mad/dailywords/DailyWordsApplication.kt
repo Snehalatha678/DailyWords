@@ -8,6 +8,7 @@ import uk.ac.tees.mad.dailywords.di.appModule
 import uk.ac.tees.mad.dailywords.di.profileModule
 import uk.ac.tees.mad.dailywords.di.supabaseModule
 import uk.ac.tees.mad.dailywords.di.viewModelModule
+import uk.ac.tees.mad.dailywords.ui.di.repositoryModule
 
 class DailyWordsApplication : Application() {
     override fun onCreate() {
@@ -15,7 +16,7 @@ class DailyWordsApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@DailyWordsApplication)
-            modules(appModule, viewModelModule, profileModule, supabaseModule)
+            modules(appModule, viewModelModule, profileModule, supabaseModule, repositoryModule)
         }
     }
 }

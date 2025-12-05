@@ -10,7 +10,7 @@ import kotlinx.coroutines.CancellationException
 
 sealed class HttpResult<out T> {
     data class Success<T>(val data: T) : HttpResult<T>()
-    data class Failure(val error: DataError.Remote) : HttpResult<Nothing>()
+    data class Failure(val error: DataError) : HttpResult<Nothing>()
     object Loading : HttpResult<Nothing>()
 }
 

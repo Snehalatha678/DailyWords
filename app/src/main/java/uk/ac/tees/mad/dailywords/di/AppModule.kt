@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.dailywords.di
 
+import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import io.ktor.client.HttpClient
@@ -26,6 +27,7 @@ import uk.ac.tees.mad.dailywords.ui.data.word.remote.WordApi
 import uk.ac.tees.mad.dailywords.ui.domain.AuthRepository
 import uk.ac.tees.mad.dailywords.ui.domain.etymology.EtymologyRepository
 import uk.ac.tees.mad.dailywords.ui.domain.util.NetworkManager
+import uk.ac.tees.mad.dailywords.ui.domain.util.NotificationScheduler
 import uk.ac.tees.mad.dailywords.ui.domain.util.TextToSpeechProvider
 import uk.ac.tees.mad.dailywords.ui.domain.word.WordRepository
 import uk.ac.tees.mad.dailywords.ui.domain.word.usecase.AddBookmark
@@ -71,7 +73,7 @@ val appModule = module {
 
     // Database
     single {
-        androidx.room.Room.databaseBuilder(
+        Room.databaseBuilder(
             androidApplication(),
             WordDatabase::class.java,
             WordDatabase.DATABASE_NAME
@@ -79,12 +81,13 @@ val appModule = module {
             .fallbackToDestructiveMigration()
             .build()
     }
+    single { get<WordDatabase>().wordDao }
 
     // Repository
     single<WordRepository> {
         WordRepositoryImpl(
             api = get(),
-            dao = get<WordDatabase>().wordDao,
+            dao = get(),
             networkManager = get()
         )
     }
@@ -101,6 +104,9 @@ val appModule = module {
 
     // TextToSpeech
     single { TextToSpeechProvider(androidApplication(), null) }
+
+    // NotificationScheduler
+    single { NotificationScheduler(androidApplication()) }
 
     // NetworkManager
     single {

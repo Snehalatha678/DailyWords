@@ -11,6 +11,7 @@ val profileModule = module {
             auth = get(),
             firestore = get(),
             storageRepository = get(),
+            notificationScheduler = get(),
             ioDispatcher = Dispatchers.IO
         )
     }

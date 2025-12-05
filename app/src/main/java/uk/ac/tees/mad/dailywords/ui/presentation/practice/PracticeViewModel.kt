@@ -78,6 +78,9 @@ class PracticeViewModel(
             PracticeAction.OnPlayRecording -> {
                 audioFile?.let { player.play(it) }
             }
+            PracticeAction.OnNavigateToHome -> onNavigate()
+            PracticeAction.OnNavigateToQuiz -> onNavigate()
+            PracticeAction.OnNavigateToProfile -> onNavigate()
         }
     }
 

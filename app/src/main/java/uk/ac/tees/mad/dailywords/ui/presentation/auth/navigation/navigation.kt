@@ -4,19 +4,37 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.create_account.CreateAccountRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.forgot.ForgotRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.auth.login.LoginRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.home.HomeRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.practice.PracticeRoot
 import uk.ac.tees.mad.dailywords.ui.presentation.profile.ProfileRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.quiz.QuizRoot
+import uk.ac.tees.mad.dailywords.ui.presentation.splash.SplashRoot
 
 @Composable
 fun Navigation(navcontroller: NavHostController){
-    val startDestination: Any = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.Home else GraphRoutes.Login
+    NavHost(navController = navcontroller, startDestination = GraphRoutes.Splash){
 
-    NavHost(navController = navcontroller, startDestination = startDestination){
+        composable<GraphRoutes.Splash>{
+            SplashRoot(
+                onNavigateToHome = {
+                    navcontroller.navigate(GraphRoutes.Home){
+                        popUpTo(GraphRoutes.Splash) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToLogin = {
+                    navcontroller.navigate(GraphRoutes.Login){
+                        popUpTo(GraphRoutes.Splash) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
 
         composable<GraphRoutes.Login>{
          LoginRoot(
@@ -68,13 +86,28 @@ fun Navigation(navcontroller: NavHostController){
                 onNavigateToPractice = { word, phonetic ->
                     navcontroller.navigate(GraphRoutes.Practice(word, phonetic))
                 },
-                onNavigateToProfile = { navcontroller.navigate(GraphRoutes.Profile) }
+                onNavigateToProfile = { navcontroller.navigate(GraphRoutes.Profile) },
+                onNavigateToQuiz = { navcontroller.navigate(GraphRoutes.Quiz) }
             )
         }
 
         composable<GraphRoutes.Practice> { 
             PracticeRoot(
                 onBackClick = { navcontroller.navigateUp() }
+            )
+        }
+
+        composable<GraphRoutes.Quiz> {
+            QuizRoot(
+                onNavigateToHome = { navcontroller.navigate(GraphRoutes.Home) {
+                    popUpTo(GraphRoutes.Quiz) { inclusive = true }
+                } },
+                onNavigateToPractice = { navcontroller.navigate(GraphRoutes.Practice("","")) {
+                    popUpTo(GraphRoutes.Quiz) { inclusive = true }
+                } },
+                onNavigateToProfile = { navcontroller.navigate(GraphRoutes.Profile) {
+                    popUpTo(GraphRoutes.Quiz) { inclusive = true }
+                } }
             )
         }
 
@@ -89,7 +122,7 @@ fun Navigation(navcontroller: NavHostController){
                 },
                 onNavigateToHome = { navcontroller.navigate(GraphRoutes.Home) },
                 onNavigateToPractice = { navcontroller.navigate(GraphRoutes.Practice("", "")) },
-                onNavigateToQuiz = { /* TODO */ }
+                onNavigateToQuiz = { navcontroller.navigate(GraphRoutes.Quiz) }
             )
         }
 

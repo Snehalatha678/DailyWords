@@ -27,13 +27,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Person
@@ -62,7 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -87,7 +82,7 @@ fun ProfileRoot(
     onLogout: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPractice: () -> Unit,
-    onNavigateToQuiz: () -> Unit
+    onNavigateToQuiz: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -106,10 +101,16 @@ fun ProfileRoot(
 
     ProfileScreen(
         state = state,
-        onAction = viewModel::onAction,
+        onAction = {
+            viewModel.onAction(it) {
+                when(it) {
+                    ProfileAction.OnNavigateToQuiz -> onNavigateToQuiz()
+                    else -> {}
+                }
+            }
+        },
         onNavigateToHome = onNavigateToHome,
         onNavigateToPractice = onNavigateToPractice,
-        onNavigateToQuiz = onNavigateToQuiz
     )
 }
 
@@ -120,7 +121,6 @@ fun ProfileScreen(
     onAction: (ProfileAction) -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPractice: () -> Unit,
-    onNavigateToQuiz: () -> Unit
 ) {
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -154,7 +154,7 @@ fun ProfileScreen(
                             when (item.label) {
                                 "Home" -> onNavigateToHome()
                                 "Practice" -> onNavigateToPractice()
-                                "Quiz" -> onNavigateToQuiz()
+                                "Quiz" -> onAction(ProfileAction.OnNavigateToQuiz)
                             }
                         },
                         icon = { Icon(if (item.isSelected) item.selectedIcon else item.icon, contentDescription = item.label) },
@@ -190,23 +190,10 @@ fun ProfileScreen(
                     onLearningLevelChange = { onAction(ProfileAction.OnLearningLevelChanged(it)) },
                     dailyNotifications = state.dailyNotifications,
                     onDailyNotificationsToggled = { onAction(ProfileAction.OnDailyNotificationsToggled(it)) },
-                    darkMode = state.darkMode,
-                    onDarkModeToggled = { onAction(ProfileAction.OnDarkModeToggled(it)) },
                     onSaveChanges = { onAction(ProfileAction.OnSaveChangesClick) }
                 )
             }
 
-            // Privacy & Security
-            Section(title = "Privacy & Security") {
-                PrivacyCard()
-            }
-
-            // Account Management
-            Section(title = "Account Management") {
-                AccountManagementCard(
-                    onResetClick = { onAction(ProfileAction.OnResetStreakClicked) }
-                )
-            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -283,8 +270,6 @@ private fun HydrationSettingsCard(
     onLearningLevelChange: (String) -> Unit,
     dailyNotifications: Boolean,
     onDailyNotificationsToggled: (Boolean) -> Unit,
-    darkMode: Boolean,
-    onDarkModeToggled: (Boolean) -> Unit,
     onSaveChanges: () -> Unit
 ) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -345,16 +330,6 @@ private fun HydrationSettingsCard(
                 Text("Daily Notifications")
                 Switch(checked = dailyNotifications, onCheckedChange = onDailyNotificationsToggled)
             }
-
-            // Dark Mode
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Dark Mode")
-                Switch(checked = darkMode, onCheckedChange = onDarkModeToggled)
-            }
             Spacer(modifier = Modifier.height(16.dp))
 
             // Save Button
@@ -370,79 +345,6 @@ private fun HydrationSettingsCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Save Changes", color = Color.White)
             }
-        }
-    }
-}
-
-@Composable
-private fun PrivacyCard() {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Privacy & Data", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(16.dp))
-            PrivacyInfoItem(
-                icon = Icons.Default.Security,
-                text = "Your personal data is securely stored on Firebase, ensuring that your information is protected."
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            PrivacyInfoItem(
-                icon = Icons.Default.Notifications,
-                text = "Notifications are used to provide you with daily words and reminders to help you learn."
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            PrivacyInfoItem(
-                icon = Icons.Default.WifiOff,
-                text = "The app is designed to work offline, so you can access your words and practice even without an internet connection."
-            )
-        }
-    }
-}
-
-@Composable
-private fun PrivacyInfoItem(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.Top) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color(0xFF15A4B8),
-            modifier = Modifier.padding(top = 2.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = text, color = Color.Gray, fontSize = 14.sp, lineHeight = 20.sp)
-    }
-}
-
-@Composable
-private fun AccountManagementCard(onResetClick: () -> Unit) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF6F6)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.clickable(onClick = onResetClick),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Reset",
-                    tint = Color.Red
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Reset Streak", color = Color.Red, fontWeight = FontWeight.Bold)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Warning: This action will permanently delete your streak, and this action cannot be undone.",
-                color = Color(0xFFD32F2F),
-                fontSize = 12.sp,
-                lineHeight = 16.sp
-            )
         }
     }
 }
@@ -465,8 +367,7 @@ private fun Preview() {
             state = ProfileState(),
             onAction = {},
             onNavigateToHome = {},
-            onNavigateToPractice = {},
-            onNavigateToQuiz = {}
+            onNavigateToPractice = {}
         )
     }
 }

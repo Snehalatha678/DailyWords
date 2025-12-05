@@ -66,7 +66,7 @@ class HomeViewModel(
                     is HttpResult.Failure -> {
                         _state.update {
                             it.copy(
-                                error = result.error.name,
+                                error = result.error.toString(),
                                 isLoading = false
                             )
                         }
@@ -164,6 +164,7 @@ class HomeViewModel(
             }
             HomeAction.OnNavigateToPractice -> onNavigate()
             HomeAction.OnNavigateToProfile -> onNavigate()
+            HomeAction.OnNavigateToQuiz -> onNavigate()
         }
     }
 

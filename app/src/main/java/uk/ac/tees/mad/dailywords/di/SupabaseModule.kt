@@ -9,8 +9,8 @@ import org.koin.dsl.module
 val supabaseModule = module {
     single<SupabaseClient> {
         createSupabaseClient(
-            supabaseUrl = "https://kvdagjrceetbstkqanlf.supabase.co",
-            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2ZGFnanJjZWV0YnN0a3FhbmxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NTgwODQsImV4cCI6MjA3NjEzNDA4NH0.7S3oqGekCWggEMtaCne9JknjhqlGdpcxFZvUEurmRGI"
+            supabaseUrl = "https://qybsmcrlxlzayxwkpdvv.supabase.co",
+            supabaseKey = "sb_publishable_UNueQMl98wGPuWlaYdlkbw_LMUgnd_G"
         ) {
             install(Storage)
         }

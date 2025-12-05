@@ -15,11 +15,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.dailywords.ui.data.repository.SupabaseStorageRepository
+import uk.ac.tees.mad.dailywords.ui.domain.util.NotificationScheduler
 
 class ProfileViewModel(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
     private val storageRepository: SupabaseStorageRepository,
+    private val notificationScheduler: NotificationScheduler,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
@@ -56,12 +58,19 @@ class ProfileViewModel(
         }
     }
 
-    fun onAction(action: ProfileAction) {
+    fun onAction(action: ProfileAction, onNavigate: () -> Unit = {}) {
         when (action) {
             is ProfileAction.OnNameChanged -> _state.update { it.copy(name = action.name) }
             is ProfileAction.OnEmailChanged -> _state.update { it.copy(email = action.email) }
             is ProfileAction.OnLearningLevelChanged -> _state.update { it.copy(learningLevel = action.level) }
-            is ProfileAction.OnDailyNotificationsToggled -> _state.update { it.copy(dailyNotifications = action.isEnabled) }
+            is ProfileAction.OnDailyNotificationsToggled -> {
+                _state.update { it.copy(dailyNotifications = action.isEnabled) }
+                if (action.isEnabled) {
+                    notificationScheduler.scheduleDailyNotification()
+                } else {
+                    notificationScheduler.cancelDailyNotification()
+                }
+            }
             is ProfileAction.OnDarkModeToggled -> _state.update { it.copy(darkMode = action.isEnabled) }
             is ProfileAction.OnProfileImageChange -> {
                 viewModelScope.launch(ioDispatcher) {
@@ -74,7 +83,7 @@ class ProfileViewModel(
                 }
             }
             ProfileAction.OnSaveChangesClick -> {
-                viewModelScope.launch() {
+                viewModelScope.launch(ioDispatcher) {
                     val user = auth.currentUser
                     user?.let {
                         val userData = hashMapOf(
@@ -94,6 +103,7 @@ class ProfileViewModel(
                     eventChannel.send(ProfileEvent.LogoutSuccess)
                 }
             }
+            ProfileAction.OnNavigateToQuiz -> onNavigate()
             else -> {}
         }
     }

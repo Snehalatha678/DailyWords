@@ -15,5 +15,9 @@ sealed class GraphRoutes {
     @Serializable
     data class Practice(val word: String, val phonetic: String): GraphRoutes()
     @Serializable
+    data object Quiz : GraphRoutes()
+    @Serializable
     data object Profile: GraphRoutes()
+    @Serializable
+    data object Splash: GraphRoutes()
 }

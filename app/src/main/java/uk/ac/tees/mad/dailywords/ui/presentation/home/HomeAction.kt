@@ -7,4 +7,5 @@ sealed interface HomeAction {
     object OnNextClick : HomeAction
     object OnNavigateToPractice : HomeAction
     object OnNavigateToProfile : HomeAction
+    object OnNavigateToQuiz : HomeAction
 }
